@@ -1,0 +1,58 @@
+package com.example.user;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.*;
+import java.util.*;
+
+@SpringBootApplication
+@RestController
+@RequestMapping("/users")
+public class UserApplication {
+    private static final Map<Integer, String> users = new HashMap<>();
+    static {
+        users.put(1, "Alice");
+        users.put(2, "Bob");
+        users.put(3, "Charlie");
+    }
+
+    @GetMapping("/{id}")
+    public String getUser(@PathVariable int id) {
+        return users.getOrDefault(id, "Unknown User");
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(UserApplication.class, args);
+    }
+}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+        - name: user
+          image: your-dockerhub-username/user-service:1.0
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  selector:
+    app: user
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
