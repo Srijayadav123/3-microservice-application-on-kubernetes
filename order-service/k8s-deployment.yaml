@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: order
-          image: your-dockerhub-username/order-service:1.0
+          image: srijayadav/order-service:1.0
           ports:
             - containerPort: 8080
 ---
